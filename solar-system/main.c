@@ -17,8 +17,10 @@
 #define HEX(c) HEX_RED(c), HEX_GREEN(c), HEX_BLUE(c)
 
 #define TIMER_DELAY 1
-#define BASE_RADIUS 170
-#define PLANET_COUNT 5
+#define RADIUS_RATIO 2
+#define SUN_RADIUS 696.342
+#define BASE_RADIUS (SUN_RADIUS / RADIUS_RATIO) + 70
+#define PLANET_COUNT 4
 
 void timer(int);
 void display();
@@ -44,7 +46,7 @@ int main(int argc, char **argv) {
     glutInit(&argc, argv);
     glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE);
     
-    glutInitWindowSize(800, 600);
+    glutInitWindowSize(1200, 800);
     glutCreateWindow("Solar System");
     
     glutReshapeFunc(reshape);
@@ -59,8 +61,10 @@ void timer(int a) {
     int radius = 0;
     sun.angle += 0.5;
     for (int i = 0; i < PLANET_COUNT; i++, radius += 100) {
-        planets[i].x = (BASE_RADIUS + radius) * cos(planets[i].fi);
-        planets[i].y = (BASE_RADIUS + radius) * sin(planets[i].fi);
+        int planet_radius = (BASE_RADIUS + radius);
+
+        planets[i].x = planet_radius * cos(planets[i].fi);
+        planets[i].y = planet_radius * sin(planets[i].fi);
         planets[i].angle += 1.5;
         planets[i].fi += planets[i].fi_step;
     }
@@ -74,7 +78,8 @@ void display_planet(struct planet p) {
     glPushMatrix();
     glTranslatef(p.x, p.y, p.z);
     glRotatef(p.angle, 15, 25, 1);
-    glutWireSphere(p.radius / 1.5, 15, 15);
+    int lines = p.radius / 3;
+    glutWireSphere(p.radius / RADIUS_RATIO, lines, lines);
     glPopMatrix();
 }
 
