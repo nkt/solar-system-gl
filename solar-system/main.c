@@ -25,12 +25,13 @@ void reshape(int, int);
 struct planet_system ps;
 
 int main(int argc, char **argv) {
-    struct planet sun, mercury, venus, earth, mars;
-    init_planet(&sun, 0xfc9a24, 695800, 0, 0);
-    init_planet(&mercury, 0x99989D, 2440, 57910000, 0.01);
-    init_planet(&venus, 0x6894D2, 6052, 108200000, 0.002);
-    init_planet(&earth, 0x005db3, 6371, 149600000, 0.0035);
-    init_planet(&mars, 0xD0331A, 3390, 227900000, 0.0015);
+    struct planet sun, mercury, venus, earth, moon, mars;
+    init_planet(&sun, 0xfc9a24, 695800, 0, 0, NULL);
+    init_planet(&mercury, 0x99989D, 2440, 57910000, 0.01, NULL);
+    init_planet(&venus, 0x6894D2, 6052, 108200000, 0.002, NULL);
+    init_planet(&moon, 0xffffff, 1737.10, 384400, 0.0035 * 12, NULL);
+    init_planet(&earth, 0x005db3, 6371, 149600000, 0.0035, &moon);
+    init_planet(&mars, 0xD0331A, 3390, 227900000, 0.0015, NULL);
     
     init_planet_system(&ps, sun);
     add_planet(&ps, mercury);
@@ -64,9 +65,13 @@ void display_planet(struct planet p) {
     glPushMatrix();
     glTranslatef(p.x, p.y, p.z);
     glRotatef(p.angle, 15, 25, 1);
-    int lines = p.radius / 3;
+    int lines = p.radius / 2.5;
     glutWireSphere(p.radius, lines, lines);
     glPopMatrix();
+    
+    if (p.satellite) {
+        display_planet(*p.satellite);
+    }
 }
 
 void display() {
